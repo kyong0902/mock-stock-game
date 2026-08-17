@@ -295,6 +295,14 @@ function trade(type) {
   const qty = Math.max(1, Math.floor(Number(document.getElementById('qtyInput').value) || 0));
   document.getElementById('tradeError').textContent = '';
   socket.emit('trade', { type, stockId: selectedStockId, quantity: qty });
+
+  if (tutorialPracticePhase === 'buy' && type === 'buy') {
+    tutorialPracticePhase = 'sell';
+    showGuide('👍 매수 완료! 이번엔 방금 산 종목을 "매도" 버튼으로 팔아보세요!');
+  } else if (tutorialPracticePhase === 'sell' && type === 'sell') {
+    tutorialPracticePhase = 'done';
+    showPracticeDone();
+  }
 }
 
 socket.on('connect', () => {
@@ -369,12 +377,13 @@ const TUTORIAL_STEPS = [
     body: '가진 돈을 다 잃으면 "파산"해서 게임이 끝나요. 소문만 믿고 무리하게 투자하면 정말 위험해요. 신중하게 생각하고 투자하세요.',
   },
   {
-    title: '🚀 이제 시작해볼까요?',
-    body: '준비됐다면 아래 버튼을 눌러서 투자를 시작해보세요! 화이팅!',
+    title: '🚀 이제 실전 연습을 해볼까요?',
+    body: '설명은 다 끝났어요! 이제 실제로 매수와 매도를 한 번씩 직접 눌러보는 연습을 해볼게요.',
   },
 ];
 
 let tutorialStep = 0;
+let tutorialPracticePhase = null; // null | 'buy' | 'sell' | 'done'
 
 function renderTutorialStep() {
   const step = TUTORIAL_STEPS[tutorialStep];
@@ -382,11 +391,13 @@ function renderTutorialStep() {
   document.getElementById('tutorialBody').innerHTML = `<h3>${step.title}</h3><p>${step.body}</p>`;
   document.getElementById('tutorialPrevBtn').style.visibility = tutorialStep === 0 ? 'hidden' : 'visible';
   document.getElementById('tutorialNextBtn').textContent =
-    tutorialStep === TUTORIAL_STEPS.length - 1 ? '시작하기' : '다음';
+    tutorialStep === TUTORIAL_STEPS.length - 1 ? '연습 시작' : '다음';
 }
 
 function closeTutorial() {
   document.getElementById('tutorialOverlay').style.display = 'none';
+  document.getElementById('tutorialGuideBanner').style.display = 'none';
+  tutorialPracticePhase = null;
   localStorage.setItem('tutorialDone', '1');
 }
 
@@ -397,9 +408,33 @@ function maybeShowTutorial() {
   document.getElementById('tutorialOverlay').style.display = 'flex';
 }
 
+function showGuide(text) {
+  document.getElementById('tutorialGuideText').textContent = text;
+  document.getElementById('tutorialGuideBanner').style.display = 'block';
+}
+
+// 튜토리얼 안내창을 닫고, 실제 화면에서 매수 -> 매도를 한 번씩 직접 해보게 함
+function startPracticeMode() {
+  document.getElementById('tutorialOverlay').style.display = 'none';
+  tutorialPracticePhase = 'buy';
+  showGuide('👉 아래 종목 목록에서 회사 하나를 골라 탭한 다음, 매수 버튼을 눌러보세요!');
+}
+
+function showPracticeDone() {
+  document.getElementById('tutorialGuideBanner').style.display = 'none';
+  document.getElementById('tutorialStepLabel').textContent = '연습 완료!';
+  document.getElementById('tutorialBody').innerHTML =
+    '<h3>🎉 잘하셨어요!</h3><p>매수와 매도를 모두 직접 해봤어요. 이제 진짜 게임을 시작해볼까요?</p>';
+  document.getElementById('tutorialPrevBtn').style.visibility = 'hidden';
+  document.getElementById('tutorialNextBtn').textContent = '시작하기';
+  document.getElementById('tutorialOverlay').style.display = 'flex';
+}
+
 document.getElementById('tutorialNextBtn').addEventListener('click', () => {
-  if (tutorialStep === TUTORIAL_STEPS.length - 1) {
+  if (tutorialPracticePhase === 'done') {
     closeTutorial();
+  } else if (tutorialStep === TUTORIAL_STEPS.length - 1) {
+    startPracticeMode();
   } else {
     tutorialStep++;
     renderTutorialStep();

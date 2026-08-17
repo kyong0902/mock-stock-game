@@ -131,6 +131,7 @@ app.post('/api/admin/cancel-timer', requireAdmin, (req, res) => {
 app.post('/api/admin/reset', requireAdmin, (req, res) => {
   resetAll();
   engine.resetPennyState();
+  gameStartedAt = Date.now();
   io.emit('gameReset');
   res.json({ ok: true });
 });
@@ -254,15 +255,25 @@ function scheduleTick() {
   }, Math.max(2, state.tick_interval_sec) * 1000);
 }
 
+// 게임(서버)이 시작된 뒤 처음 90초 동안은 뉴스 이벤트가 뜨지 않고,
+// 그 이후부터 event_interval_sec 주기로 자동 발생함 (전체 초기화 시 다시 90초 대기)
+const FIRST_EVENT_DELAY_SEC = 90;
+let gameStartedAt = Date.now();
+
 function scheduleEvent() {
   const state = queries.getGameState();
+  const elapsedSec = (Date.now() - gameStartedAt) / 1000;
+  const delaySec =
+    elapsedSec < FIRST_EVENT_DELAY_SEC
+      ? Math.max(1, FIRST_EVENT_DELAY_SEC - elapsedSec)
+      : Math.max(5, state.event_interval_sec);
   setTimeout(() => {
     try {
       engine.runEventCycle(io);
     } finally {
       scheduleEvent();
     }
-  }, Math.max(5, state.event_interval_sec) * 1000);
+  }, delaySec * 1000);
 }
 
 // 타이머로 설정한 라운드 종료 시각이 지나면 자동으로 게임 종료 처리
