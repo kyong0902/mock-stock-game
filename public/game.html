@@ -18,8 +18,16 @@
   </div>
 </div>
 
-<div class="news-ticker" id="newsTicker">
-  <span class="item">뉴스 속보를 기다리는 중...</span>
+<div id="toastStack" class="toast-stack"></div>
+
+<div id="holdingModal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <span class="modal-tag" id="modalTag"></span>
+    <h3 id="modalTitle">📢 보유 종목 관련 뉴스</h3>
+    <p id="modalMessage" style="line-height:1.6"></p>
+    <div class="modal-detail" id="modalDetail"></div>
+    <button class="btn-primary" id="modalCloseBtn" style="width:100%">확인하고 매매 결정하기</button>
+  </div>
 </div>
 
 <div class="main-layout">

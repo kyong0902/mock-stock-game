@@ -89,21 +89,69 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .stat-pill .label { color: #9aa4b8; }
 .stat-pill .value { font-weight: 700; font-size: 16px; }
 
-.news-ticker {
-  background: #202a1a;
-  border-bottom: 1px solid #2c3a1e;
-  padding: 10px 16px;
-  font-size: 14px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.news-ticker .item { display: inline-block; margin-right: 40px; }
-.news-ticker .tag { font-weight: 800; margin-right: 6px; padding: 2px 8px; border-radius: 6px; font-size: 12px; }
 .tag-good { background: #e0444422; color: #ff6b6b; }
 .tag-bad { background: #3355cc22; color: #6f9bff; }
 .tag-macro { background: #ffb02222; color: #ffb022; }
 .tag-earn { background: #8a5cff22; color: #b492ff; }
 .tag-delist { background: #66666644; color: #ccc; }
+
+/* ---- 뉴스 토스트 팝업 ---- */
+.toast-stack {
+  position: fixed;
+  top: 76px;
+  right: 16px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+  width: calc(100% - 32px);
+}
+.toast {
+  background: #1b2130;
+  border-left: 4px solid #4f7cff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  animation: toast-in 0.2s ease;
+}
+.toast .tag { display:inline-block; font-weight: 800; padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ---- 보유종목 관련 뉴스 모달 ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-box {
+  background: #1b2130;
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.modal-box h3 { margin-top: 4px; }
+.modal-tag { display: inline-block; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.modal-detail {
+  background: #10141c;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 14px 0;
+}
 
 .main-layout {
   display: grid;

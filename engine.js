@@ -106,11 +106,19 @@ function advancePennyPhase(stockId) {
   }
 }
 
-function broadcastNews(io, { type, scope, message, price_impact_percent }) {
+function broadcastNews(io, { type, scope, message, price_impact_percent, stockId, stockName, sector, affectedSectors, marketWide }) {
   db.prepare(
     'INSERT INTO news_events (type, scope, message, price_impact_percent) VALUES (?, ?, ?, ?)'
   ).run(type, scope, message, price_impact_percent ?? null);
-  io.emit('newsEvent', { type, scope, message, price_impact_percent, timestamp: new Date().toISOString() });
+  io.emit('newsEvent', {
+    type, scope, message, price_impact_percent,
+    stockId: stockId ?? null,
+    stockName: stockName ?? null,
+    sector: sector ?? null,
+    affectedSectors: affectedSectors ?? null,
+    marketWide: marketWide ?? false,
+    timestamp: new Date().toISOString(),
+  });
 }
 
 function checkDelistAndBankruptcy(io, stock) {
@@ -122,6 +130,9 @@ function checkDelistAndBankruptcy(io, stock) {
     scope: `stock:${stock.id}`,
     message: `${stock.name}, 상장폐지 결정 — 거래 영구 정지`,
     price_impact_percent: -100,
+    stockId: stock.id,
+    stockName: stock.name,
+    sector: stock.sector,
   });
 
   const holders = db
@@ -208,6 +219,9 @@ function triggerStockEvent(io, kind) {
     scope: `stock:${stock.id}`,
     message: fmt(template, stock.name),
     price_impact_percent: Math.round(pct * 1000) / 10,
+    stockId: stock.id,
+    stockName: stock.name,
+    sector: stock.sector,
   });
   broadcastMarketUpdate(io);
 }
@@ -221,11 +235,15 @@ function triggerMacroEvent(io) {
       applyPriceImpact(io, stock, pct);
     }
   }
+  const affectedSectors = Object.keys(scenario.impacts).filter((k) => k !== 'DEFAULT');
+  const marketWide = Object.prototype.hasOwnProperty.call(scenario.impacts, 'DEFAULT');
   broadcastNews(io, {
     type: '거시경제',
     scope: 'market',
     message: scenario.message,
     price_impact_percent: null,
+    affectedSectors,
+    marketWide,
   });
   broadcastMarketUpdate(io);
 }
@@ -243,6 +261,9 @@ function triggerEarningsEvent(io) {
     scope: `stock:${stock.id}`,
     message: fmt(template, stock.name),
     price_impact_percent: Math.round(pct * 1000) / 10,
+    stockId: stock.id,
+    stockName: stock.name,
+    sector: stock.sector,
   });
   broadcastMarketUpdate(io);
 }
@@ -263,6 +284,9 @@ function triggerPennyEvent(io) {
       scope: `stock:${stock.id}`,
       message: fmt(template, stock.name),
       price_impact_percent: Math.round(pct * 1000) / 10,
+      stockId: stock.id,
+      stockName: stock.name,
+      sector: stock.sector,
     });
   } else {
     const template = pick(PENNY_CRASH_TEMPLATES);
@@ -273,6 +297,9 @@ function triggerPennyEvent(io) {
       scope: `stock:${stock.id}`,
       message: fmt(template, stock.name),
       price_impact_percent: Math.round(pct * 1000) / 10,
+      stockId: stock.id,
+      stockName: stock.name,
+      sector: stock.sector,
     });
   }
   broadcastMarketUpdate(io);
@@ -297,6 +324,9 @@ function manualEvent(io, { kind, stockId, sector }) {
         scope: `stock:${stock.id}`,
         message: fmt(template, stock.name),
         price_impact_percent: Math.round(pct * 1000) / 10,
+        stockId: stock.id,
+        stockName: stock.name,
+        sector: stock.sector,
       });
       broadcastMarketUpdate(io);
     } else {
@@ -317,6 +347,9 @@ function manualEvent(io, { kind, stockId, sector }) {
       scope: `stock:${stock.id}`,
       message: fmt(template, stock.name),
       price_impact_percent: Math.round(pct * 1000) / 10,
+      stockId: stock.id,
+      stockName: stock.name,
+      sector: stock.sector,
     });
     broadcastMarketUpdate(io);
     return;

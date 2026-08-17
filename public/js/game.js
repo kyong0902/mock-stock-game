@@ -162,18 +162,81 @@ function renderLeaderboard(leaderboard) {
   });
 }
 
-function pushNews(item) {
-  const ticker = document.getElementById('newsTicker');
-  const tagClass = {
-    '호재': 'tag-good', '악재': 'tag-bad', '거시경제': 'tag-macro',
-    '실적발표': 'tag-earn', '상장폐지': 'tag-delist',
-  }[item.type] || 'tag-macro';
-  const span = document.createElement('span');
-  span.className = 'item';
-  span.innerHTML = `<span class="tag ${tagClass}">${item.type}</span>${item.message}`;
-  ticker.prepend(span);
-  while (ticker.children.length > 8) ticker.removeChild(ticker.lastChild);
+const NEWS_TAG_CLASS = {
+  '호재': 'tag-good', '악재': 'tag-bad', '거시경제': 'tag-macro',
+  '실적발표': 'tag-earn', '상장폐지': 'tag-delist',
+};
+
+function showToast(item) {
+  const stack = document.getElementById('toastStack');
+  const tagClass = NEWS_TAG_CLASS[item.type] || 'tag-macro';
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="tag ${tagClass}">${item.type}</span><div>${item.message}</div>`;
+  stack.appendChild(el);
+  setTimeout(() => el.remove(), 6000);
+  while (stack.children.length > 5) stack.removeChild(stack.firstChild);
 }
+
+// 뉴스가 학생이 보유 중인 종목(또는 그 종목의 섹터)과 관련 있는지 판단
+function getRelevantHoldings(item) {
+  if (!portfolio || portfolio.holdings.length === 0) return [];
+  return portfolio.holdings.filter((h) => {
+    if (h.quantity <= 0 || h.is_delisted) return false;
+    if (item.stockId) return h.stock_id === item.stockId;
+    if (item.type === '거시경제') {
+      const stock = stocks.find((s) => s.id === h.stock_id);
+      if (!stock) return false;
+      if (item.marketWide) return true;
+      return Array.isArray(item.affectedSectors) && item.affectedSectors.includes(stock.sector);
+    }
+    return false;
+  });
+}
+
+let modalQueue = [];
+let modalShowing = false;
+let pendingSelectStockId = null;
+
+function enqueueHoldingModal(item, relevantHoldings) {
+  modalQueue.push({ item, relevantHoldings });
+  if (!modalShowing) showNextModal();
+}
+
+function showNextModal() {
+  if (modalQueue.length === 0) {
+    modalShowing = false;
+    return;
+  }
+  modalShowing = true;
+  const { item, relevantHoldings } = modalQueue.shift();
+
+  const tagClass = NEWS_TAG_CLASS[item.type] || 'tag-macro';
+  const tagEl = document.getElementById('modalTag');
+  tagEl.textContent = item.type;
+  tagEl.className = 'modal-tag ' + tagClass;
+  document.getElementById('modalMessage').textContent = item.message;
+
+  const detailLines = relevantHoldings.map((h) => {
+    const stock = stocks.find((s) => s.id === h.stock_id);
+    const price = stock ? stock.price : h.price;
+    return `<strong>${h.name}</strong> · 보유 ${h.quantity}주 · 현재가 ${fmtWon(price)} · 평가액 ${fmtWon(h.quantity * price)}`;
+  });
+  document.getElementById('modalDetail').innerHTML = detailLines.join('<br>') || '보유 내역 없음';
+
+  pendingSelectStockId = relevantHoldings[0] ? relevantHoldings[0].stock_id : null;
+  document.getElementById('holdingModal').style.display = 'flex';
+}
+
+document.getElementById('modalCloseBtn').addEventListener('click', () => {
+  document.getElementById('holdingModal').style.display = 'none';
+  if (pendingSelectStockId) {
+    selectedStockId = pendingSelectStockId;
+    renderStockList();
+    renderTradeBox();
+  }
+  showNextModal();
+});
 
 function applyGameState(state) {
   gameState = state;
@@ -191,10 +254,6 @@ async function loadInitialState() {
   renderStockList();
   renderLeaderboard(data.leaderboard);
   renderHeader();
-
-  const newsRes = await fetch('/api/news');
-  const news = await newsRes.json();
-  news.slice(0, 8).reverse().forEach((n) => pushNews({ type: n.type, message: n.message }));
 }
 
 document.getElementById('buyBtn').addEventListener('click', () => trade('buy'));
@@ -233,7 +292,12 @@ socket.on('leaderboardData', (leaderboard) => {
 });
 
 socket.on('newsEvent', (item) => {
-  pushNews(item);
+  const relevantHoldings = getRelevantHoldings(item);
+  if (relevantHoldings.length > 0) {
+    enqueueHoldingModal(item, relevantHoldings);
+  } else {
+    showToast(item);
+  }
 });
 
 socket.on('gameStateUpdate', (state) => {
