@@ -16,6 +16,7 @@ let selectedSector = '전체';
 let portfolio = null;
 let gameState = { is_trading_active: true };
 let roundEndsAt = null;
+let sessionStartedAt = null;
 
 function updateRemainingTime() {
   const pill = document.getElementById('timerPill');
@@ -281,6 +282,7 @@ async function loadInitialState() {
   const data = await res.json();
   stocks = data.stocks;
   applyGameState(data.gameState);
+  sessionStartedAt = data.gameState.session_started_at;
   stocks.forEach((s) => { referencePrices[s.id] = s.price; });
   renderSectorTabs();
   renderStockList();
@@ -398,11 +400,12 @@ function closeTutorial() {
   document.getElementById('tutorialOverlay').style.display = 'none';
   document.getElementById('tutorialGuideBanner').style.display = 'none';
   tutorialPracticePhase = null;
-  localStorage.setItem('tutorialDone', '1');
+  // 세션(전체 초기화) 단위로 기억 - 교사가 "전체 초기화"를 누를 때마다 다음 접속 시 다시 뜸
+  localStorage.setItem('tutorialSeenSession', sessionStartedAt || '');
 }
 
 function maybeShowTutorial() {
-  if (localStorage.getItem('tutorialDone') === '1') return;
+  if (sessionStartedAt && localStorage.getItem('tutorialSeenSession') === sessionStartedAt) return;
   tutorialStep = 0;
   renderTutorialStep();
   document.getElementById('tutorialOverlay').style.display = 'flex';
@@ -448,5 +451,6 @@ document.getElementById('tutorialPrevBtn').addEventListener('click', () => {
   }
 });
 
-loadInitialState();
-maybeShowTutorial();
+loadInitialState().then(() => {
+  maybeShowTutorial();
+});

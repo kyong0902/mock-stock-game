@@ -46,7 +46,7 @@ app.post('/api/join', (req, res) => {
 app.get('/api/state', (req, res) => {
   res.json({
     stocks: queries.getStocks(),
-    gameState: queries.getGameState(),
+    gameState: { ...queries.getGameState(), session_started_at: new Date(gameStartedAt).toISOString() },
     leaderboard: queries.getLeaderboard(),
   });
 });
