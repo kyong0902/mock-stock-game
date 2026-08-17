@@ -95,63 +95,46 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .tag-earn { background: #8a5cff22; color: #b492ff; }
 .tag-delist { background: #66666644; color: #ccc; }
 
-/* ---- 뉴스 토스트 팝업 ---- */
-.toast-stack {
-  position: fixed;
-  top: 76px;
-  right: 16px;
-  z-index: 60;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 320px;
-  width: calc(100% - 32px);
-}
-.toast {
-  background: #1b2130;
-  border-left: 4px solid #4f7cff;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 13px;
-  line-height: 1.5;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-  animation: toast-in 0.2s ease;
-}
-.toast .tag { display:inline-block; font-weight: 800; padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px; }
-@keyframes toast-in {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* ---- 보유종목 관련 뉴스 모달 ---- */
+/* ---- 뉴스 팝업 (화면 중앙, 크게) ---- */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
   padding: 20px;
+  animation: overlay-in 0.15s ease;
 }
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
 .modal-box {
   background: #1b2130;
-  border-radius: 16px;
-  padding: 28px;
-  max-width: 420px;
-  width: 100%;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: min(94vw, 480px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  border: 2px solid #2c3345;
+  animation: modal-in 0.2s ease;
 }
-.modal-box h3 { margin-top: 4px; }
-.modal-tag { display: inline-block; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-box.modal-relevant { border-color: #4f7cff; }
+.modal-box h3 { margin-top: 10px; font-size: 22px; }
+#modalMessage { font-size: 18px; line-height: 1.6; }
+.modal-tag { display: inline-block; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
 .modal-detail {
   background: #10141c;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 14px 0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 16px 0;
 }
+#modalCloseBtn { font-size: 18px; padding: 16px 20px; }
 
 .main-layout {
   display: grid;
@@ -160,9 +143,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   padding: 16px;
   max-width: 1100px;
   margin: 0 auto;
+  padding-bottom: 210px;
 }
 @media (min-width: 900px) {
-  .main-layout { grid-template-columns: 2fr 1fr; }
+  .main-layout { grid-template-columns: 2fr 1fr; padding-bottom: 16px; }
+  #pageFooter { display: block; }
 }
 
 .sector-tabs {
@@ -235,8 +220,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .leaderboard-list .bankrupt { color: #ff5b5b; }
 
 .holdings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.holdings-table th, .holdings-table td { text-align: right; padding: 6px 4px; border-bottom: 1px solid #232a3a; }
+.holdings-table th, .holdings-table td { text-align: right; padding: 8px 4px; border-bottom: 1px solid #232a3a; }
 .holdings-table th:first-child, .holdings-table td:first-child { text-align: left; }
+.holdings-table tbody tr.clickable { cursor: pointer; }
+.holdings-table tbody tr.clickable:active { background: #232a3a; }
+.holdings-table tbody tr.row-selected td { color: #4f7cff; }
 
 .badge-bankrupt {
   display: inline-block;
@@ -267,3 +255,27 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .status-paused { color: #ff5b5b; font-weight: 800; }
 
 footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px; }
+#pageFooter { display: none; }
+
+/* ---- 모바일: 매수/매도 패널을 화면 하단에 고정 ---- */
+@media (max-width: 899px) {
+  .app-header { padding: 10px 14px; }
+  .app-header .brand { font-size: 17px; }
+  .stat-pill { padding: 6px 10px; font-size: 12px; }
+  .stat-pill .value { font-size: 14px; }
+
+  #tradeBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    margin: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.5);
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+  #tradeBar h3 { font-size: 16px; margin-bottom: 6px; }
+}

@@ -144,6 +144,16 @@ function renderHoldings() {
     const tr = document.createElement('tr');
     const value = h.is_delisted ? 0 : h.quantity * h.price;
     tr.innerHTML = `<td>${h.name}${h.is_delisted ? '<span class="badge-bankrupt">상폐</span>' : ''}</td><td>${h.quantity}</td><td>${fmtWon(value)}</td>`;
+    if (!h.is_delisted) {
+      tr.classList.add('clickable');
+      if (h.stock_id === selectedStockId) tr.classList.add('row-selected');
+      tr.addEventListener('click', () => {
+        selectedStockId = h.stock_id;
+        renderStockList();
+        renderTradeBox();
+        renderHoldings();
+      });
+    }
     tbody.appendChild(tr);
   });
 }
@@ -167,17 +177,6 @@ const NEWS_TAG_CLASS = {
   '실적발표': 'tag-earn', '상장폐지': 'tag-delist',
 };
 
-function showToast(item) {
-  const stack = document.getElementById('toastStack');
-  const tagClass = NEWS_TAG_CLASS[item.type] || 'tag-macro';
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.innerHTML = `<span class="tag ${tagClass}">${item.type}</span><div>${item.message}</div>`;
-  stack.appendChild(el);
-  setTimeout(() => el.remove(), 6000);
-  while (stack.children.length > 5) stack.removeChild(stack.firstChild);
-}
-
 // 뉴스가 학생이 보유 중인 종목(또는 그 종목의 섹터)과 관련 있는지 판단
 function getRelevantHoldings(item) {
   if (!portfolio || portfolio.holdings.length === 0) return [];
@@ -194,48 +193,81 @@ function getRelevantHoldings(item) {
   });
 }
 
-let modalQueue = [];
-let modalShowing = false;
+let popupQueue = [];
+let popupShowing = false;
+let popupAutoTimer = null;
 let pendingSelectStockId = null;
 
-function enqueueHoldingModal(item, relevantHoldings) {
-  modalQueue.push({ item, relevantHoldings });
-  if (!modalShowing) showNextModal();
+function enqueuePopup(item, relevantHoldings) {
+  popupQueue.push({ item, relevantHoldings });
+  if (!popupShowing) showNextPopup();
 }
 
-function showNextModal() {
-  if (modalQueue.length === 0) {
-    modalShowing = false;
+function showNextPopup() {
+  if (popupAutoTimer) {
+    clearTimeout(popupAutoTimer);
+    popupAutoTimer = null;
+  }
+  if (popupQueue.length === 0) {
+    popupShowing = false;
+    document.getElementById('holdingModal').style.display = 'none';
     return;
   }
-  modalShowing = true;
-  const { item, relevantHoldings } = modalQueue.shift();
+  popupShowing = true;
+  const { item, relevantHoldings } = popupQueue.shift();
+  const isRelevant = relevantHoldings.length > 0;
+
+  const box = document.getElementById('modalBox');
+  box.classList.toggle('modal-relevant', isRelevant);
 
   const tagClass = NEWS_TAG_CLASS[item.type] || 'tag-macro';
   const tagEl = document.getElementById('modalTag');
   tagEl.textContent = item.type;
   tagEl.className = 'modal-tag ' + tagClass;
+
+  document.getElementById('modalTitle').textContent = isRelevant ? '📢 내 보유 종목 관련 뉴스!' : '📰 시장 뉴스 속보';
   document.getElementById('modalMessage').textContent = item.message;
 
-  const detailLines = relevantHoldings.map((h) => {
-    const stock = stocks.find((s) => s.id === h.stock_id);
-    const price = stock ? stock.price : h.price;
-    return `<strong>${h.name}</strong> · 보유 ${h.quantity}주 · 현재가 ${fmtWon(price)} · 평가액 ${fmtWon(h.quantity * price)}`;
-  });
-  document.getElementById('modalDetail').innerHTML = detailLines.join('<br>') || '보유 내역 없음';
+  const detailEl = document.getElementById('modalDetail');
+  if (isRelevant) {
+    const detailLines = relevantHoldings.map((h) => {
+      const stock = stocks.find((s) => s.id === h.stock_id);
+      const price = stock ? stock.price : h.price;
+      return `<strong>${h.name}</strong> · 보유 ${h.quantity}주 · 현재가 ${fmtWon(price)} · 평가액 ${fmtWon(h.quantity * price)}`;
+    });
+    detailEl.innerHTML = detailLines.join('<br>');
+    detailEl.style.display = 'block';
+  } else {
+    detailEl.style.display = 'none';
+  }
 
-  pendingSelectStockId = relevantHoldings[0] ? relevantHoldings[0].stock_id : null;
+  document.getElementById('modalCloseBtn').textContent = isRelevant ? '확인하고 매매 결정하기' : '확인';
+  pendingSelectStockId = isRelevant ? relevantHoldings[0].stock_id : null;
+
   document.getElementById('holdingModal').style.display = 'flex';
+
+  if (!isRelevant) {
+    popupAutoTimer = setTimeout(() => closeCurrentPopup(), 4500);
+  }
 }
 
-document.getElementById('modalCloseBtn').addEventListener('click', () => {
-  document.getElementById('holdingModal').style.display = 'none';
+function closeCurrentPopup() {
   if (pendingSelectStockId) {
     selectedStockId = pendingSelectStockId;
     renderStockList();
     renderTradeBox();
+    renderHoldings();
   }
-  showNextModal();
+  showNextPopup();
+}
+
+document.getElementById('modalCloseBtn').addEventListener('click', closeCurrentPopup);
+
+// 보유 종목과 무관한 일반 뉴스는 배경을 탭해도 바로 닫을 수 있게 함
+document.getElementById('holdingModal').addEventListener('click', (e) => {
+  if (e.target.id === 'holdingModal' && !pendingSelectStockId) {
+    closeCurrentPopup();
+  }
 });
 
 function applyGameState(state) {
@@ -292,12 +324,7 @@ socket.on('leaderboardData', (leaderboard) => {
 });
 
 socket.on('newsEvent', (item) => {
-  const relevantHoldings = getRelevantHoldings(item);
-  if (relevantHoldings.length > 0) {
-    enqueueHoldingModal(item, relevantHoldings);
-  } else {
-    showToast(item);
-  }
+  enqueuePopup(item, getRelevantHoldings(item));
 });
 
 socket.on('gameStateUpdate', (state) => {

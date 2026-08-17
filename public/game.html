@@ -18,15 +18,13 @@
   </div>
 </div>
 
-<div id="toastStack" class="toast-stack"></div>
-
 <div id="holdingModal" class="modal-overlay" style="display:none">
-  <div class="modal-box">
+  <div class="modal-box" id="modalBox">
     <span class="modal-tag" id="modalTag"></span>
-    <h3 id="modalTitle">📢 보유 종목 관련 뉴스</h3>
-    <p id="modalMessage" style="line-height:1.6"></p>
+    <h3 id="modalTitle">📢 뉴스 속보</h3>
+    <p id="modalMessage"></p>
     <div class="modal-detail" id="modalDetail"></div>
-    <button class="btn-primary" id="modalCloseBtn" style="width:100%">확인하고 매매 결정하기</button>
+    <button class="btn-primary" id="modalCloseBtn" style="width:100%">확인</button>
   </div>
 </div>
 
@@ -37,7 +35,7 @@
   </div>
 
   <div>
-    <div class="panel trade-box">
+    <div class="panel trade-box" id="tradeBar">
       <h3 id="selectedStockName">종목을 선택하세요</h3>
       <div class="trade-summary" id="selectedStockInfo"></div>
       <div class="qty-row">
@@ -53,6 +51,7 @@
 
     <div class="panel">
       <h3>내 보유 종목</h3>
+      <p style="color:#9aa4b8; font-size:12px; margin-top:-8px">종목을 탭하면 위에서 바로 매수/매도할 수 있어요</p>
       <table class="holdings-table" id="holdingsTable">
         <thead><tr><th>종목</th><th>수량</th><th>평가액</th></tr></thead>
         <tbody></tbody>
@@ -66,7 +65,7 @@
   </div>
 </div>
 
-<footer class="hint">모의 투자입니다. 실제 돈이나 실제 기업과 무관합니다.</footer>
+<footer class="hint" id="pageFooter">모의 투자입니다. 실제 돈이나 실제 기업과 무관합니다.</footer>
 
 <script src="/js/game.js"></script>
 </body>
