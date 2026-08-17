@@ -77,6 +77,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   gap: 10px;
 }
 .app-header .brand { font-size: 20px; font-weight: 800; }
+.app-header .stats-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .stat-pill {
   background: #232a3a;
   border-radius: 999px;
@@ -268,35 +269,68 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px; }
 
-/* ---- 모바일: 상단 통계 + 보유종목/매매 패널은 고정, 종목 리스트만 스크롤 ---- */
+/* ---- 모바일: 상단 20% 통계 / 중간 50% 종목 리스트(스크롤) / 하단 30% 보유종목+매매(고정) ---- */
 @media (max-width: 899px) {
   html, body { height: 100%; }
   body {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
-  .app-header { flex-shrink: 0; position: static; }
 
-  .page-shell {
-    flex: 1;
-    min-height: 0;
+  .app-header {
+    flex: 0 0 20%;
+    position: static;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px;
+    overflow: hidden;
   }
-  .fixed-controls { flex-shrink: 0; }
+  .app-header .brand { font-size: 14px; flex-shrink: 0; }
+  .app-header .stats-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .stat-pill { flex-shrink: 0; padding: 6px 10px; font-size: 11px; white-space: nowrap; }
+  .stat-pill .value { font-size: 13px; }
+
+  /* page-shell을 레이아웃 박스에서 제거해 scroll-area/fixed-controls가 body의 직속 flex 항목이 되게 함 */
+  .page-shell { display: contents; }
+
   .scroll-area {
-    flex: 1;
+    order: 1;
+    flex: 0 0 50%;
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding: 8px 14px;
   }
 
-  #tradeBar { margin-bottom: 10px; }
-  #tradeBar h3 { font-size: 16px; margin-bottom: 6px; }
-  .holdings-panel { padding-bottom: 12px; }
-  #pageFooter { padding: 12px; }
+  .fixed-controls {
+    order: 2;
+    flex: 0 0 30%;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #161b26;
+    border-top: 1px solid #232a3a;
+  }
+  .fixed-controls .panel { padding: 10px 12px; margin-bottom: 0; }
+  #tradeBar h3 { font-size: 15px; margin: 0 0 4px; }
+  .trade-summary { margin-bottom: 6px; font-size: 13px; }
+  .holdings-panel h3 { font-size: 14px; }
+  #pageFooter { display: none; }
 }
 
 /* ---- 데스크톱: 2단 레이아웃 (왼쪽 종목 리스트, 오른쪽 매매/보유종목) ---- */
