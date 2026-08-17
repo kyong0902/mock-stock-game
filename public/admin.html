@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>교사 관리 화면 - 모의주식투자</title>
+<link rel="stylesheet" href="/css/style.css" />
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div id="loginScreen" class="center-screen">
+  <div class="card">
+    <h1>🔑 교사 관리자</h1>
+    <p class="sub">비밀번호를 입력하세요</p>
+    <input type="password" id="passwordInput" placeholder="관리자 비밀번호" />
+    <div class="error-msg" id="loginError"></div>
+    <button class="btn-primary" id="loginBtn">입장</button>
+  </div>
+</div>
+
+<div id="adminScreen" style="display:none">
+  <div class="app-header">
+    <div class="brand">🎛 교사 관리 화면</div>
+    <div class="stat-pill"><span class="label">거래 상태</span><span class="value" id="tradingStatus">-</span></div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="panel">
+      <h3>거래 제어</h3>
+      <button class="btn-secondary" id="toggleTradingBtn">거래 시작/일시정지</button>
+      <button class="btn-danger" id="endGameBtn">게임 종료 (최종 순위 확정)</button>
+      <button class="btn-danger" id="resetBtn">전체 초기화 (새 수업 시작)</button>
+      <p style="color:#9aa4b8; font-size:13px; margin-top:10px">
+        게임 종료를 누르면 모든 학생의 거래가 잠기고 <a href="/results.html" target="_blank" style="color:#4f7cff">최종 순위 화면</a>으로 자동 이동합니다.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3>속도 조절</h3>
+      <div class="qty-row">
+        <label style="align-self:center; width:130px; color:#9aa4b8">가격 변동 주기(초)</label>
+        <input type="number" id="tickInterval" min="2" value="6" />
+      </div>
+      <div class="qty-row">
+        <label style="align-self:center; width:130px; color:#9aa4b8">이벤트 주기(초)</label>
+        <input type="number" id="eventInterval" min="5" value="25" />
+      </div>
+      <button class="btn-primary" id="applySpeedBtn">적용</button>
+    </div>
+
+    <div class="panel">
+      <h3>수동 이벤트 발동</h3>
+      <select id="eventStock" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; background:#10141c; color:#f0f2f6; border:2px solid #2c3345;">
+        <option value="">종목 무작위 선택</option>
+      </select>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <button class="btn-buy" data-kind="good">호재 발동</button>
+        <button class="btn-sell" data-kind="bad">악재 발동</button>
+        <button class="btn-secondary" data-kind="macro">거시경제 이벤트</button>
+        <button class="btn-secondary" data-kind="earnings">실적발표 이벤트</button>
+        <button class="btn-secondary" data-kind="penny">동전주 이벤트</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>학생 현황 (<span id="studentCount">0</span>명)</h3>
+      <ul class="leaderboard-list" id="studentList"></ul>
+    </div>
+  </div>
+
+  <footer class="hint">이 화면은 교사만 접속하세요. 학생 화면은 <a href="/" style="color:#4f7cff">여기</a>, 전체 순위 화면은 <a href="/results.html" style="color:#4f7cff">여기</a>입니다.</footer>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>

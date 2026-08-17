@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>파산 - 모의주식투자</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="center-screen">
+  <div class="card">
+    <h1>💸 파산했습니다</h1>
+    <p class="sub" id="nicknameLine"></p>
+    <div class="panel" style="text-align:left">
+      <p id="message" style="line-height:1.6"></p>
+      <p style="line-height:1.6; color:#9aa4b8; font-size:14px">
+        실제 주식 투자도 마찬가지입니다. 근거 없는 소문만 믿고 무리하게 투자하면
+        원금을 모두 잃을 수 있습니다. 오늘의 경험을 기억하고, 앞으로는 신중하고
+        분산된 투자를 연습해보세요.
+      </p>
+    </div>
+    <button class="btn-secondary" id="leaderboardBtn" style="width:100%; margin-top:8px">전체 순위 보기</button>
+  </div>
+</div>
+
+<script>
+const studentId = localStorage.getItem('studentId');
+const nickname = localStorage.getItem('nickname') || '';
+document.getElementById('nicknameLine').textContent = nickname ? nickname + '님, 게임이 종료되었습니다.' : '게임이 종료되었습니다.';
+document.getElementById('message').textContent = '가지고 있던 현금과 주식을 모두 잃어 더 이상 거래를 진행할 수 없습니다.';
+
+if (!studentId) {
+  location.href = '/';
+}
+
+document.getElementById('leaderboardBtn').addEventListener('click', () => {
+  location.href = '/results.html';
+});
+</script>
+</body>
+</html>

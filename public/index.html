@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>모의주식투자</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="center-screen">
+  <div class="card">
+    <h1>📈 모의주식투자</h1>
+    <p class="sub">닉네임을 입력하고 바로 시작하세요</p>
+    <input type="text" id="nickname" placeholder="닉네임 (예: 홍길동)" maxlength="20" />
+    <div class="error-msg" id="errorMsg"></div>
+    <button class="btn-primary" id="joinBtn">입장하기</button>
+  </div>
+</div>
+
+<script>
+const nicknameInput = document.getElementById('nickname');
+const errorMsg = document.getElementById('errorMsg');
+const joinBtn = document.getElementById('joinBtn');
+
+async function join() {
+  const nickname = nicknameInput.value.trim();
+  errorMsg.textContent = '';
+  if (!nickname) {
+    errorMsg.textContent = '닉네임을 입력해주세요.';
+    return;
+  }
+  joinBtn.disabled = true;
+  try {
+    const res = await fetch('/api/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nickname }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errorMsg.textContent = data.error || '입장에 실패했습니다.';
+      joinBtn.disabled = false;
+      return;
+    }
+    localStorage.setItem('studentId', data.studentId);
+    localStorage.setItem('nickname', nickname);
+    if (data.status === 'bankrupt') {
+      location.href = '/bankrupt.html';
+    } else {
+      location.href = '/game.html';
+    }
+  } catch (e) {
+    errorMsg.textContent = '서버에 연결할 수 없습니다.';
+    joinBtn.disabled = false;
+  }
+}
+
+joinBtn.addEventListener('click', join);
+nicknameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') join(); });
+
+// 이미 입장한 적 있으면 자동 이동
+const existingId = localStorage.getItem('studentId');
+if (existingId) {
+  fetch('/api/portfolio/' + existingId).then(async (r) => {
+    if (!r.ok) return;
+    const p = await r.json();
+    if (p.status === 'bankrupt') location.href = '/bankrupt.html';
+    else location.href = '/game.html';
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

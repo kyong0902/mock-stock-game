@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>최종 순위 - 모의주식투자</title>
+<link rel="stylesheet" href="/css/style.css" />
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<div class="app-header">
+  <div class="brand">🏆 최종 순위</div>
+  <div class="stat-pill"><span class="label">상태</span><span class="value" id="statusLabel">-</span></div>
+</div>
+
+<div id="podium" class="results-podium"></div>
+
+<div class="full-list panel">
+  <h3>전체 순위</h3>
+  <ul class="leaderboard-list" id="fullList"></ul>
+</div>
+
+<footer class="hint">프로젝터로 화면을 크게 띄워 학생들과 함께 확인해보세요.</footer>
+
+<script>
+const socket = io();
+
+function fmtWon(n) {
+  return Math.round(n).toLocaleString('ko-KR') + '원';
+}
+
+function render(leaderboard, gameState) {
+  document.getElementById('statusLabel').textContent = gameState && gameState.is_trading_active ? '진행 중 (실시간)' : '게임 종료';
+
+  const podium = document.getElementById('podium');
+  podium.innerHTML = '';
+  const top3 = leaderboard.slice(0, 3);
+  const order = [1, 0, 2]; // 2등-1등-3등 배치
+  order.forEach((idx) => {
+    const p = top3[idx];
+    if (!p) return;
+    const rank = idx + 1;
+    const slot = document.createElement('div');
+    slot.className = 'podium-slot podium-' + rank;
+    slot.innerHTML = `
+      <div class="podium-medal">${rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}</div>
+      <div class="name">${p.nickname}${p.status === 'bankrupt' ? '<span class="badge-bankrupt">파산</span>' : ''}</div>
+      <div class="assets">${fmtWon(p.totalAssets)}</div>
+      <div class="podium-bar"></div>
+    `;
+    podium.appendChild(slot);
+  });
+
+  const list = document.getElementById('fullList');
+  list.innerHTML = '';
+  leaderboard.forEach((p, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span><span class="rank">${i + 1}</span> ${p.nickname}${p.status === 'bankrupt' ? '<span class="badge-bankrupt">파산</span>' : ''}</span>
+      <span>${fmtWon(p.totalAssets)}</span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+async function load() {
+  const res = await fetch('/api/results');
+  const data = await res.json();
+  render(data.leaderboard, data.gameState);
+}
+
+socket.on('marketUpdate', (data) => render(data.leaderboard, null));
+socket.on('gameEnded', (data) => render(data.leaderboard, { is_trading_active: false }));
+socket.on('gameStateUpdate', () => load());
+socket.on('gameReset', () => load());
+
+load();
+</script>
+</body>
+</html>

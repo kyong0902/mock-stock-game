@@ -1,0 +1,221 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  background: #10141c;
+  color: #f0f2f6;
+  min-height: 100vh;
+}
+
+a { color: inherit; }
+
+.center-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: #1b2130;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.card h1 { font-size: 28px; margin-bottom: 8px; }
+.card p.sub { color: #9aa4b8; margin-bottom: 24px; }
+
+input[type="text"], input[type="password"], input[type="number"] {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: 2px solid #2c3345;
+  background: #10141c;
+  color: #f0f2f6;
+  margin-bottom: 14px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 20px;
+  transition: transform 0.05s ease, opacity 0.15s ease;
+}
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary { background: #4f7cff; color: white; width: 100%; }
+.btn-buy { background: #e04c4c; color: white; }
+.btn-sell { background: #3b6bd6; color: white; }
+.btn-secondary { background: #2c3345; color: #f0f2f6; }
+.btn-danger { background: #e04c4c; color: white; }
+
+.error-msg { color: #ff7676; font-size: 14px; margin-top: -6px; margin-bottom: 12px; min-height: 18px; }
+
+/* ---- App shell ---- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #161b26;
+  border-bottom: 1px solid #232a3a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.app-header .brand { font-size: 20px; font-weight: 800; }
+.stat-pill {
+  background: #232a3a;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.stat-pill .label { color: #9aa4b8; }
+.stat-pill .value { font-weight: 700; font-size: 16px; }
+
+.news-ticker {
+  background: #202a1a;
+  border-bottom: 1px solid #2c3a1e;
+  padding: 10px 16px;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.news-ticker .item { display: inline-block; margin-right: 40px; }
+.news-ticker .tag { font-weight: 800; margin-right: 6px; padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+.tag-good { background: #e0444422; color: #ff6b6b; }
+.tag-bad { background: #3355cc22; color: #6f9bff; }
+.tag-macro { background: #ffb02222; color: #ffb022; }
+.tag-earn { background: #8a5cff22; color: #b492ff; }
+.tag-delist { background: #66666644; color: #ccc; }
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 900px) {
+  .main-layout { grid-template-columns: 2fr 1fr; }
+}
+
+.sector-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+.sector-tabs button {
+  background: #1b2130;
+  color: #9aa4b8;
+  white-space: nowrap;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+.sector-tabs button.active { background: #4f7cff; color: white; }
+
+.stock-list { display: flex; flex-direction: column; gap: 10px; }
+
+.stock-card {
+  background: #1b2130;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.stock-card.selected { border-color: #4f7cff; }
+.stock-card.delisted { opacity: 0.45; }
+.stock-card .info { flex: 1; min-width: 0; }
+.stock-card .name { font-weight: 700; font-size: 16px; }
+.stock-card .sector { color: #9aa4b8; font-size: 12px; }
+.stock-card .price-box { text-align: right; }
+.stock-card .price { font-weight: 800; font-size: 17px; }
+.stock-card .change { font-size: 13px; }
+.up { color: #ff5b5b; }
+.down { color: #5b8dff; }
+.flat { color: #9aa4b8; }
+.penny-badge { background: #ffb02222; color: #ffb022; font-size: 11px; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+
+.panel {
+  background: #1b2130;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.panel h3 { margin-top: 0; }
+
+.trade-box .qty-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.trade-box .qty-row input { flex: 1; margin-bottom: 0; }
+.trade-box .actions { display: flex; gap: 8px; }
+.trade-box .actions button { flex: 1; }
+.trade-summary { font-size: 14px; color: #9aa4b8; margin-bottom: 10px; }
+
+.leaderboard-list { list-style: none; margin: 0; padding: 0; }
+.leaderboard-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #232a3a;
+  font-size: 14px;
+}
+.leaderboard-list li:last-child { border-bottom: none; }
+.leaderboard-list .rank { width: 28px; font-weight: 800; color: #9aa4b8; }
+.leaderboard-list .me { color: #4f7cff; font-weight: 800; }
+.leaderboard-list .bankrupt { color: #ff5b5b; }
+
+.holdings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.holdings-table th, .holdings-table td { text-align: right; padding: 6px 4px; border-bottom: 1px solid #232a3a; }
+.holdings-table th:first-child, .holdings-table td:first-child { text-align: left; }
+
+.badge-bankrupt {
+  display: inline-block;
+  background: #e04c4c;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.results-podium { display: flex; align-items: flex-end; justify-content: center; gap: 16px; margin: 40px 0; }
+.podium-slot { text-align: center; }
+.podium-slot .name { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.podium-slot .assets { color: #9aa4b8; font-size: 14px; margin-bottom: 8px; }
+.podium-bar { border-radius: 10px 10px 0 0; width: 120px; }
+.podium-1 .podium-bar { height: 160px; background: linear-gradient(180deg,#ffd15c,#c9971f); }
+.podium-2 .podium-bar { height: 120px; background: linear-gradient(180deg,#d7d7d7,#9a9a9a); }
+.podium-3 .podium-bar { height: 90px; background: linear-gradient(180deg,#e0a06a,#a4652f); }
+.podium-medal { font-size: 32px; }
+
+.full-list { max-width: 700px; margin: 0 auto; }
+
+.admin-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 16px; max-width: 900px; margin: 0 auto; }
+@media (min-width: 800px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
+.admin-grid .panel button { margin: 4px 4px 4px 0; }
+.status-active { color: #6bff9e; font-weight: 800; }
+.status-paused { color: #ff5b5b; font-weight: 800; }
+
+footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px; }
