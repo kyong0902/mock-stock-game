@@ -324,17 +324,49 @@ footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px
     background: #161b26;
     border-top: 1px solid #232a3a;
   }
-  .fixed-controls .panel { padding: 8px 10px; margin-bottom: 0; }
-  .mini-label { font-size: 11px; color: #9aa4b8; margin-bottom: 4px; }
+  .fixed-controls .panel { padding: 6px 10px; margin-bottom: 0; }
+  .mini-label { font-size: 10px; color: #9aa4b8; margin-bottom: 3px; }
   .mini-hint { display: none; }
-  .holdings-chips { padding-bottom: 6px; }
-  .holding-chip { padding: 5px 9px; font-size: 12px; }
-  #tradeBar h3 { font-size: 14px; margin: 4px 0 2px; }
-  .trade-summary { margin-bottom: 4px; font-size: 12px; }
-  .trade-box .qty-row { margin-bottom: 6px; }
-  .error-msg { min-height: 0; margin-bottom: 4px; font-size: 12px; }
-  .trade-box .actions button { padding: 10px 16px; font-size: 15px; }
+  .holdings-chips { padding-bottom: 4px; }
+  .holding-chip { padding: 4px 8px; font-size: 11px; }
+  #tradeBar h3 { font-size: 13px; margin: 3px 0 1px; }
+  .trade-summary { margin-bottom: 3px; font-size: 11px; }
+  .trade-box .qty-row { margin-bottom: 4px; gap: 6px; }
+  .trade-box .qty-row input {
+    padding: 6px 8px;
+    font-size: 13px;
+    height: 30px;
+  }
+  .error-msg { min-height: 0; margin-bottom: 2px; font-size: 11px; }
+  .trade-box .actions { gap: 6px; }
+  .trade-box .actions button { padding: 7px 10px; font-size: 13px; border-radius: 8px; }
   #pageFooter { display: none; }
+
+  /* 뉴스 팝업: 전체 화면이 아니라 종목 리스트 상단에 붙어서 표시 */
+  .scroll-area { position: relative; }
+  .modal-overlay {
+    position: sticky;
+    inset: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: linear-gradient(180deg, #10141c 78%, transparent);
+    padding: 4px 0 10px;
+    justify-content: center;
+  }
+  .modal-box {
+    width: 100%;
+    max-width: none;
+    padding: 14px 14px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  }
+  .modal-box h3 { font-size: 15px; margin: 6px 0 4px; }
+  #modalMessage { font-size: 13px; line-height: 1.5; }
+  .modal-detail { padding: 8px 10px; font-size: 12px; margin: 8px 0; }
+  .modal-tag { font-size: 11px; padding: 3px 8px; }
+  #modalCloseBtn { font-size: 13px; padding: 9px 14px; }
 }
 
 /* ---- 데스크톱: 2단 레이아웃 (왼쪽 종목 리스트, 오른쪽 매매/보유종목) ---- */
