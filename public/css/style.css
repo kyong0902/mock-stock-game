@@ -348,3 +348,33 @@ footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px
   .fixed-controls { order: 2; padding: 0; }
   .scroll-area { order: 1; padding: 0; }
 }
+
+/* ---- 첫 접속 튜토리얼 (기존 화면 위에 뜨는 별도 오버레이, 다른 레이아웃과 무관) ---- */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.tutorial-card {
+  background: #1b2130;
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: min(94vw, 420px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  border: 2px solid #4f7cff;
+}
+.tutorial-step-label {
+  color: #9aa4b8;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.tutorial-card h3 { margin: 0 0 10px; font-size: 19px; }
+.tutorial-card p { margin: 0; font-size: 15px; line-height: 1.6; color: #f0f2f6; }
+.tutorial-actions { display: flex; gap: 8px; margin-top: 20px; }
+.tutorial-actions button { flex: 1; }

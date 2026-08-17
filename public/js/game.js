@@ -351,4 +351,67 @@ socket.on('gameReset', () => {
   location.href = '/';
 });
 
+const TUTORIAL_STEPS = [
+  {
+    title: '📈 모의주식투자에 오신 걸 환영해요!',
+    body: '가상의 돈 1,000,000원으로 주식 투자를 연습해볼 거예요. 진짜 돈이 아니니까 마음껏 도전해보세요!',
+  },
+  {
+    title: '🛒 사고파는 방법',
+    body: '화면 아래쪽에 매수/매도 칸이 있어요. 종목을 고르고 수량을 입력한 뒤 "매수"나 "매도" 버튼을 누르면 돼요. "내 보유 종목"을 탭하면 그 종목을 바로 매매할 수 있어요.',
+  },
+  {
+    title: '📰 뉴스를 잘 보세요',
+    body: '화면에 뉴스 속보가 떠요. 좋은 소식(호재)이 뜨면 가격이 오르고, 나쁜 소식(악재)이 뜨면 가격이 떨어져요. 내가 가진 종목 소식은 더 크게 강조돼서 알려줘요.',
+  },
+  {
+    title: '⚠️ 꼭 기억하세요!',
+    body: '가진 돈을 다 잃으면 "파산"해서 게임이 끝나요. 소문만 믿고 무리하게 투자하면 정말 위험해요. 신중하게 생각하고 투자하세요.',
+  },
+  {
+    title: '🚀 이제 시작해볼까요?',
+    body: '준비됐다면 아래 버튼을 눌러서 투자를 시작해보세요! 화이팅!',
+  },
+];
+
+let tutorialStep = 0;
+
+function renderTutorialStep() {
+  const step = TUTORIAL_STEPS[tutorialStep];
+  document.getElementById('tutorialStepLabel').textContent = `${tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
+  document.getElementById('tutorialBody').innerHTML = `<h3>${step.title}</h3><p>${step.body}</p>`;
+  document.getElementById('tutorialPrevBtn').style.visibility = tutorialStep === 0 ? 'hidden' : 'visible';
+  document.getElementById('tutorialNextBtn').textContent =
+    tutorialStep === TUTORIAL_STEPS.length - 1 ? '시작하기' : '다음';
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialOverlay').style.display = 'none';
+  localStorage.setItem('tutorialDone', '1');
+}
+
+function maybeShowTutorial() {
+  if (localStorage.getItem('tutorialDone') === '1') return;
+  tutorialStep = 0;
+  renderTutorialStep();
+  document.getElementById('tutorialOverlay').style.display = 'flex';
+}
+
+document.getElementById('tutorialNextBtn').addEventListener('click', () => {
+  if (tutorialStep === TUTORIAL_STEPS.length - 1) {
+    closeTutorial();
+  } else {
+    tutorialStep++;
+    renderTutorialStep();
+  }
+});
+
+document.getElementById('tutorialPrevBtn').addEventListener('click', () => {
+  if (tutorialStep > 0) {
+    tutorialStep--;
+    renderTutorialStep();
+  }
+});
+
 loadInitialState();
+maybeShowTutorial();
