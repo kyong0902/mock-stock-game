@@ -76,7 +76,7 @@ function renderStockList() {
     card.className = 'stock-card' + (stock.id === selectedStockId ? ' selected' : '') + (stock.isDelisted ? ' delisted' : '');
     card.innerHTML = `
       <div class="info">
-        <div class="name">${stock.name}${stock.riskTier === 'penny' ? '<span class="penny-badge">동전주</span>' : ''}${stock.isDelisted ? '<span class="badge-bankrupt">상장폐지</span>' : ''}</div>
+        <div class="name">${stock.name}${stock.isDelisted ? '<span class="badge-bankrupt">상장폐지</span>' : ''}</div>
         <div class="sector">${stock.sector} · ${stock.symbol}</div>
       </div>
       <div class="price-box">

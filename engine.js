@@ -6,67 +6,67 @@ function broadcastMarketUpdate(io) {
 }
 
 const GOOD_TEMPLATES = [
-  '{name}, 신제품 흥행으로 주가 급등',
-  '{name}, 대규모 해외 수출 계약 체결',
-  '{name}, 업계 예상 뛰어넘는 신기술 공개',
-  '{name}, 유명 투자자 대량 매수 소식',
-  '{name}, 정부 지원 정책 수혜 기대',
+  '{name}, 새로 나온 물건이 인기 폭발이에요! 불티나게 팔려요 🎉',
+  '{name}, 외국에 물건을 잔뜩 팔기로 했대요! 신난다 🎉',
+  '{name}, 멋진 신기술을 새로 만들었대요! 다들 깜짝 놀랐어요 😲',
+  '{name}, 유명한 부자가 이 회사 주식을 잔뜩 샀대요!',
+  '{name}, 나라에서 이 회사를 도와주기로 했대요!',
 ];
 
 const BAD_TEMPLATES = [
-  '{name}, 공장 화재 사고 발생',
-  '{name}, 제품 리콜 사태로 신뢰도 하락',
-  '{name}, 경쟁사와의 소송에서 패소',
-  '{name}, 핵심 임원 비리 의혹 제기',
-  '{name}, 주력 제품 판매 부진 지속',
+  '{name}, 공장에 불이 났어요 ㅠㅠ',
+  '{name}, 물건에 문제가 있어서 다시 가져가야 한대요 ㅠㅠ 사람들이 실망했어요',
+  '{name}, 다른 회사랑 다퉜는데 졌대요 ㅠㅠ',
+  '{name}, 회사 높은 사람이 나쁜 짓을 했다는 소문이 났어요 ㅠㅠ',
+  '{name}, 요즘 물건이 잘 안 팔려요 ㅠㅠ',
 ];
 
-const EARNINGS_SURPRISE = ['{name}, 어닝서프라이즈! 시장 예상치 크게 상회'];
-const EARNINGS_SHOCK = ['{name}, 어닝쇼크! 실적 시장 기대치 하회'];
+const EARNINGS_SURPRISE = ['{name}, 이번에 돈을 예상보다 훨씬 많이 벌었대요! 최고예요 🎉'];
+const EARNINGS_SHOCK = ['{name}, 실적이 안 좋아요 ㅠㅠ 물건이 잘 안 팔렸어요 ㅠㅠ'];
 
 const PENNY_RUMOR_TEMPLATES = [
-  '{name}, SNS에서 "대박 테마주" 입소문 확산',
-  '{name}, 정체불명 세력 매수설 확산',
-  '{name}, 근거 없는 "신사업 진출설" 루머 확산',
+  '{name}, SNS에서 "대박 난다"는 소문이 쫙 퍼졌어요!',
+  '{name}, 누가 이 주식을 엄청 많이 사고 있다는 소문이에요!',
+  '{name}, 곧 새로운 사업을 한다는 소문이 돌아요! (진짜인지는 아무도 몰라요)',
 ];
 
 const PENNY_CRASH_TEMPLATES = [
-  '{name}, 허위공시 적발 조사 착수',
-  '{name}, 감자(자본금 감소) 결정 공시',
-  '{name}, 거래정지 임박설 확산',
+  '{name}, 거짓 소문으로 사람들을 속였다는 게 들통났어요 ㅠㅠ',
+  '{name}, 회사에 돈이 부족해졌대요 ㅠㅠ',
+  '{name}, 곧 이 주식을 사고팔 수 없게 될 수도 있대요 ㅠㅠ 다들 깜짝 놀랐어요',
 ];
 
 const MACRO_SCENARIOS = [
   {
-    message: '한국은행, 기준금리 인상 발표',
+    message: '은행에서 돈을 빌릴 때 내야 하는 이자가 올랐어요',
     impacts: { 금융: 0.04, DEFAULT: -0.015 },
   },
   {
-    message: '한국은행, 기준금리 인하 발표',
+    message: '은행에서 돈을 빌릴 때 내야 하는 이자가 내렸어요',
     impacts: { 금융: -0.03, DEFAULT: 0.015 },
   },
   {
-    message: '국제 유가 급등, 산유국 감산 합의',
+    message: '기름값이 많이 올랐어요! 기름을 만드는 회사는 좋고, 기름을 많이 쓰는 비행기 회사는 힘들어졌어요',
     impacts: { '에너지/화학': 0.05, '항공/조선': -0.04 },
   },
   {
-    message: '국제 유가 급락, 공급 과잉 우려',
+    message: '기름값이 뚝 떨어졌어요! 기름을 만드는 회사는 힘들고, 비행기 회사는 신났어요',
     impacts: { '에너지/화학': -0.05, '항공/조선': 0.04 },
   },
   {
-    message: '원달러 환율 급등 (원화 약세)',
+    message: '원화 가치가 조금 떨어졌어요! 외국에 물건을 파는 회사들이 더 유리해졌어요',
     impacts: { 반도체: 0.03, 자동차: 0.03, 배터리: 0.03, '항공/조선': 0.02 },
   },
   {
-    message: '원달러 환율 급락 (원화 강세)',
+    message: '원화 가치가 올랐어요! 외국에 물건을 파는 회사들은 조금 힘들어졌어요',
     impacts: { 반도체: -0.03, 자동차: -0.03, 배터리: -0.03, '항공/조선': -0.02, '인터넷/플랫폼': 0.01 },
   },
   {
-    message: '글로벌 경기 훈풍, 전 세계 증시 동반 상승',
+    message: '전 세계 경제가 좋아지고 있대요! 다 같이 신나요 🎉',
     impacts: { DEFAULT: 0.025 },
   },
   {
-    message: '글로벌 경기 침체 우려 확산',
+    message: '전 세계 경제가 안 좋아지고 있대요 ㅠㅠ',
     impacts: { DEFAULT: -0.025 },
   },
 ];
@@ -128,7 +128,7 @@ function checkDelistAndBankruptcy(io, stock) {
   broadcastNews(io, {
     type: '상장폐지',
     scope: `stock:${stock.id}`,
-    message: `${stock.name}, 상장폐지 결정 — 거래 영구 정지`,
+    message: `${stock.name}, 상장폐지됐어요 ㅠㅠ 이제 이 주식은 다시 사고팔 수 없어요`,
     price_impact_percent: -100,
     stockId: stock.id,
     stockName: stock.name,

@@ -20,6 +20,7 @@ const STOCKS = [
   { name: '넨씨소프트', symbol: 'NCS', sector: '게임', price: 175000, floor_price: 300 },
   { name: '넥슨코리아', symbol: 'NXK', sector: '게임', price: 24000, floor_price: 100 },
   { name: '스마길게임', symbol: 'SMG', sector: '게임', price: 8900, floor_price: 100 },
+  { name: '대박코인게임즈', symbol: 'DBC', sector: '게임', price: 480, floor_price: 80, risk_tier: 'penny' },
 
   { name: '하이브레인', symbol: 'HBR', sector: '엔터테인먼트', price: 245000, floor_price: 300 },
   { name: 'SM스타쉽', symbol: 'SMS', sector: '엔터테인먼트', price: 68000, floor_price: 200 },
@@ -27,6 +28,7 @@ const STOCKS = [
 
   { name: '셀트리곤', symbol: 'CTG', sector: '바이오/제약', price: 165000, floor_price: 300 },
   { name: '삼송바이오로직', symbol: 'SBL', sector: '바이오/제약', price: 480000, floor_price: 500 },
+  { name: '가즈아바이오', symbol: 'GZB', sector: '바이오/제약', price: 650, floor_price: 100, risk_tier: 'penny' },
 
   { name: '국민은향', symbol: 'KBB', sector: '금융', price: 58000, floor_price: 200 },
   { name: '신한금융그룹', symbol: 'SHF', sector: '금융', price: 45000, floor_price: 200 },
@@ -39,11 +41,10 @@ const STOCKS = [
   { name: 'SK에너지', symbol: 'SKN', sector: '에너지/화학', price: 142000, floor_price: 300 },
   { name: '한화케미칼텍', symbol: 'HWC', sector: '에너지/화학', price: 33000, floor_price: 100 },
   { name: '포항스틸', symbol: 'POS', sector: '에너지/화학', price: 285000, floor_price: 300 },
-
-  // 동전주/작전주 — 상장폐지 체험용 (극단적 변동성, floor_price가 시작가 대비 높아 쉽게 상폐)
-  { name: '가즈아바이오', symbol: 'GZB', sector: '테마/작전주', price: 650, floor_price: 100, risk_tier: 'penny' },
-  { name: '대박코인게임즈', symbol: 'DBC', sector: '테마/작전주', price: 480, floor_price: 80, risk_tier: 'penny' },
 ];
+
+// 가즈아바이오(바이오/제약), 대박코인게임즈(게임)는 risk_tier: 'penny'로 태그된 동전주/작전주.
+// 다른 종목과 같은 섹터에 섞여 있어 학생들이 미리 위험을 알아채지 못한 채 자연스럽게 상장폐지를 경험하게 됨.
 
 function seedStocks() {
   const insert = db.prepare(
