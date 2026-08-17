@@ -63,14 +63,22 @@ CREATE TABLE IF NOT EXISTS game_state (
   is_trading_active INTEGER NOT NULL DEFAULT 1,
   tick_interval_sec INTEGER NOT NULL DEFAULT 6,
   event_interval_sec INTEGER NOT NULL DEFAULT 25,
-  event_frequency REAL NOT NULL DEFAULT 1.0
+  event_frequency REAL NOT NULL DEFAULT 1.0,
+  round_ends_at TEXT
 );
 `);
+
+// 기존에 만들어진 game.db에는 round_ends_at 컬럼이 없을 수 있어 안전하게 추가
+try {
+  db.exec('ALTER TABLE game_state ADD COLUMN round_ends_at TEXT');
+} catch (e) {
+  // 이미 컬럼이 존재하면 무시
+}
 
 const gameStateRow = db.prepare('SELECT * FROM game_state WHERE id = 1').get();
 if (!gameStateRow) {
   db.prepare(
-    'INSERT INTO game_state (id, is_trading_active, tick_interval_sec, event_interval_sec, event_frequency) VALUES (1, 1, 6, 25, 1.0)'
+    'INSERT INTO game_state (id, is_trading_active, tick_interval_sec, event_interval_sec, event_frequency, round_ends_at) VALUES (1, 1, 6, 25, 1.0, NULL)'
   ).run();
 }
 

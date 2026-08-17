@@ -37,6 +37,20 @@
     </div>
 
     <div class="panel">
+      <h3>수업 타이머</h3>
+      <p style="color:#9aa4b8; font-size:13px; margin-top:0">
+        시간을 정해두면 학생 화면에 남은 시간이 표시되고, 시간이 다 되면 자동으로 거래가 잠기고 최종 순위 화면으로 이동합니다.
+      </p>
+      <div class="qty-row">
+        <label style="align-self:center; width:110px; color:#9aa4b8">수업 시간(분)</label>
+        <input type="number" id="roundMinutes" min="1" value="20" />
+      </div>
+      <button class="btn-primary" id="startRoundBtn" style="width:100%; margin-bottom:8px">타이머 시작 (거래 시작)</button>
+      <button class="btn-secondary" id="cancelTimerBtn" style="width:100%">타이머만 취소 (거래는 계속)</button>
+      <p style="margin-top:10px; font-size:14px">남은 시간: <strong id="remainingTime">-</strong></p>
+    </div>
+
+    <div class="panel">
       <h3>속도 조절</h3>
       <div class="qty-row">
         <label style="align-self:center; width:130px; color:#9aa4b8">가격 변동 주기(초)</label>

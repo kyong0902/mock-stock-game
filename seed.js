@@ -71,7 +71,7 @@ function resetAll() {
       DELETE FROM holdings;
       DELETE FROM students;
       DELETE FROM stocks;
-      UPDATE game_state SET is_trading_active = 1 WHERE id = 1;
+      UPDATE game_state SET is_trading_active = 1, round_ends_at = NULL WHERE id = 1;
     `);
     db.exec('COMMIT');
   } catch (err) {

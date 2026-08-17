@@ -15,6 +15,27 @@ let selectedStockId = null;
 let selectedSector = '전체';
 let portfolio = null;
 let gameState = { is_trading_active: true };
+let roundEndsAt = null;
+
+function updateRemainingTime() {
+  const pill = document.getElementById('timerPill');
+  const val = document.getElementById('remainingTimeValue');
+  if (!roundEndsAt) {
+    pill.style.display = 'none';
+    return;
+  }
+  pill.style.display = 'flex';
+  const remainMs = roundEndsAt - Date.now();
+  if (remainMs <= 0) {
+    val.textContent = '00:00';
+    return;
+  }
+  const totalSec = Math.floor(remainMs / 1000);
+  const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const ss = String(totalSec % 60).padStart(2, '0');
+  val.textContent = `${mm}:${ss}`;
+}
+setInterval(updateRemainingTime, 1000);
 
 function fmtWon(n) {
   return Math.round(n).toLocaleString('ko-KR') + '원';
@@ -154,11 +175,17 @@ function pushNews(item) {
   while (ticker.children.length > 8) ticker.removeChild(ticker.lastChild);
 }
 
+function applyGameState(state) {
+  gameState = state;
+  roundEndsAt = state.round_ends_at ? new Date(state.round_ends_at).getTime() : null;
+  updateRemainingTime();
+}
+
 async function loadInitialState() {
   const res = await fetch('/api/state');
   const data = await res.json();
   stocks = data.stocks;
-  gameState = data.gameState;
+  applyGameState(data.gameState);
   stocks.forEach((s) => { referencePrices[s.id] = s.price; });
   renderSectorTabs();
   renderStockList();
@@ -210,7 +237,7 @@ socket.on('newsEvent', (item) => {
 });
 
 socket.on('gameStateUpdate', (state) => {
-  gameState = state;
+  applyGameState(state);
   renderHeader();
   renderTradeBox();
 });

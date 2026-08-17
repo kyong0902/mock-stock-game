@@ -96,12 +96,36 @@ app.post('/api/admin/trigger-event', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/api/admin/end-game', requireAdmin, (req, res) => {
-  db.prepare('UPDATE game_state SET is_trading_active = 0 WHERE id = 1').run();
+function endGame() {
+  db.prepare('UPDATE game_state SET is_trading_active = 0, round_ends_at = NULL WHERE id = 1').run();
   const leaderboard = queries.getLeaderboard();
   io.emit('gameStateUpdate', queries.getGameState());
   io.emit('gameEnded', { leaderboard });
+  return leaderboard;
+}
+
+app.post('/api/admin/end-game', requireAdmin, (req, res) => {
+  const leaderboard = endGame();
   res.json({ ok: true, leaderboard });
+});
+
+app.post('/api/admin/start-round', requireAdmin, (req, res) => {
+  const minutes = Number(req.body.minutes);
+  if (!minutes || minutes <= 0) {
+    return res.status(400).json({ error: '올바른 분(minutes) 값을 입력해주세요.' });
+  }
+  const roundEndsAt = new Date(Date.now() + minutes * 60 * 1000).toISOString();
+  db.prepare('UPDATE game_state SET is_trading_active = 1, round_ends_at = ? WHERE id = 1').run(roundEndsAt);
+  const next = queries.getGameState();
+  io.emit('gameStateUpdate', next);
+  res.json(next);
+});
+
+app.post('/api/admin/cancel-timer', requireAdmin, (req, res) => {
+  db.prepare('UPDATE game_state SET round_ends_at = NULL WHERE id = 1').run();
+  const next = queries.getGameState();
+  io.emit('gameStateUpdate', next);
+  res.json(next);
 });
 
 app.post('/api/admin/reset', requireAdmin, (req, res) => {
@@ -240,6 +264,16 @@ function scheduleEvent() {
     }
   }, Math.max(5, state.event_interval_sec) * 1000);
 }
+
+// 타이머로 설정한 라운드 종료 시각이 지나면 자동으로 게임 종료 처리
+setInterval(() => {
+  const state = queries.getGameState();
+  if (state.is_trading_active && state.round_ends_at) {
+    if (new Date(state.round_ends_at).getTime() <= Date.now()) {
+      endGame();
+    }
+  }
+}, 1000);
 
 scheduleTick();
 scheduleEvent();

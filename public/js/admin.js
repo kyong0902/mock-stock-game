@@ -51,13 +51,37 @@ async function loadState() {
   renderStockOptions(data.stocks);
 }
 
+let roundEndsAt = null;
+
 function renderGameState(state) {
   const el = document.getElementById('tradingStatus');
   el.textContent = state.is_trading_active ? '거래 중' : '중지됨';
   el.className = state.is_trading_active ? 'status-active' : 'status-paused';
   document.getElementById('tickInterval').value = state.tick_interval_sec;
   document.getElementById('eventInterval').value = state.event_interval_sec;
+  roundEndsAt = state.round_ends_at ? new Date(state.round_ends_at).getTime() : null;
+  updateRemainingTime();
 }
+
+function updateRemainingTime() {
+  const el = document.getElementById('remainingTime');
+  if (!el) return;
+  if (!roundEndsAt) {
+    el.textContent = '설정 안 함';
+    return;
+  }
+  const remainMs = roundEndsAt - Date.now();
+  if (remainMs <= 0) {
+    el.textContent = '종료됨';
+    return;
+  }
+  const totalSec = Math.floor(remainMs / 1000);
+  const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const ss = String(totalSec % 60).padStart(2, '0');
+  el.textContent = `${mm}:${ss}`;
+}
+
+setInterval(updateRemainingTime, 1000);
 
 function renderStockOptions(stocks) {
   const select = document.getElementById('eventStock');
@@ -113,6 +137,27 @@ document.querySelectorAll('[data-kind]').forEach((btn) => {
       body: JSON.stringify({ kind, stockId: stockId ? Number(stockId) : undefined }),
     });
   });
+});
+
+document.getElementById('startRoundBtn').addEventListener('click', async () => {
+  const minutes = Number(document.getElementById('roundMinutes').value);
+  const res = await adminFetch('/api/admin/start-round', {
+    method: 'POST',
+    body: JSON.stringify({ minutes }),
+  });
+  if (res.ok) {
+    const state = await res.json();
+    renderGameState(state);
+  } else {
+    const err = await res.json();
+    alert(err.error || '타이머 시작에 실패했습니다.');
+  }
+});
+
+document.getElementById('cancelTimerBtn').addEventListener('click', async () => {
+  const res = await adminFetch('/api/admin/cancel-timer', { method: 'POST' });
+  const state = await res.json();
+  renderGameState(state);
 });
 
 document.getElementById('endGameBtn').addEventListener('click', async () => {
