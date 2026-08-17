@@ -65,30 +65,36 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 /* ---- App shell ---- */
 .app-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 14px;
   background: #161b26;
   border-bottom: 1px solid #232a3a;
   position: sticky;
   top: 0;
-  z-index: 10;
-  flex-wrap: wrap;
-  gap: 10px;
+  z-index: 40;
 }
-.app-header .brand { font-size: 20px; font-weight: 800; }
-.app-header .stats-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.app-header .brand { font-size: 14px; font-weight: 800; }
+.app-header .stats-row { display: flex; gap: 6px; flex-wrap: wrap; }
 .stat-pill {
   background: #232a3a;
   border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 14px;
+  padding: 5px 10px;
+  font-size: 11px;
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: baseline;
+  white-space: nowrap;
 }
 .stat-pill .label { color: #9aa4b8; }
-.stat-pill .value { font-weight: 700; font-size: 16px; }
+.stat-pill .value { font-weight: 700; font-size: 12px; }
+
+@media (min-width: 900px) {
+  .app-header { flex-direction: row; align-items: center; justify-content: space-between; padding: 14px 20px; }
+  .app-header .brand { font-size: 20px; }
+  .stat-pill { padding: 8px 16px; font-size: 14px; }
+  .stat-pill .value { font-size: 16px; }
+}
 
 .tag-good { background: #e0444422; color: #ff6b6b; }
 .tag-bad { background: #3355cc22; color: #6f9bff; }
@@ -176,10 +182,22 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 .stock-card.selected { border-color: #4f7cff; }
 .stock-card.delisted { opacity: 0.45; }
-.stock-card .info { flex: 1; min-width: 0; }
-.stock-card .name { font-weight: 700; font-size: 16px; }
-.stock-card .sector { color: #9aa4b8; font-size: 12px; }
-.stock-card .price-box { text-align: right; }
+.stock-card .info { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.stock-card .name {
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stock-card .sector {
+  color: #9aa4b8;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stock-card .price-box { flex: 0 0 auto; text-align: right; }
 .stock-card .price { font-weight: 800; font-size: 17px; }
 .stock-card .change { font-size: 13px; }
 .up { color: #ff5b5b; }
@@ -270,103 +288,53 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 footer.hint { text-align: center; color: #6b7280; font-size: 12px; padding: 20px; }
 
-/* ---- 모바일: 상단(통계)·하단(보유종목+매매)은 내용 크기만큼만, 중간(종목 리스트)이 남는 공간을 모두 사용 ---- */
+/* ---- 모바일: 페이지는 평범하게 스크롤, 매수/매도 패널만 화면 하단에 고정 ---- */
 @media (max-width: 899px) {
-  html, body { height: 100%; }
-  body {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  .app-header {
-    flex: 0 0 auto;
-    position: static;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px 12px;
-  }
-  .app-header .brand { font-size: 13px; flex-shrink: 0; }
-  .app-header .stats-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-  .stat-pill { padding: 4px 8px; font-size: 11px; white-space: nowrap; }
-  .stat-pill .value { font-size: 12px; }
-
-  .page-shell {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
+  .page-shell { padding: 0; }
 
   .scroll-area {
-    order: 1;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 6px 12px;
+    padding: 8px 12px 200px;
   }
 
   .fixed-controls {
-    order: 2;
-    flex: 0 0 auto;
-    max-height: 48vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
-    background: #161b26;
-    border-top: 1px solid #232a3a;
+    padding: 0;
   }
-  .fixed-controls .panel { padding: 6px 10px; margin-bottom: 0; }
-  .mini-label { font-size: 10px; color: #9aa4b8; margin-bottom: 3px; }
-  .mini-hint { display: none; }
-  .holdings-chips { padding-bottom: 4px; }
-  .holding-chip { padding: 4px 8px; font-size: 11px; }
-  #tradeBar h3 { font-size: 13px; margin: 3px 0 1px; }
-  .trade-summary { margin-bottom: 3px; font-size: 11px; }
-  .trade-box .qty-row { margin-bottom: 4px; gap: 6px; }
-  .trade-box .qty-row input {
-    padding: 6px 8px;
-    font-size: 13px;
-    height: 30px;
-  }
-  .error-msg { min-height: 0; margin-bottom: 2px; font-size: 11px; }
-  .trade-box .actions { gap: 6px; }
-  .trade-box .actions button { padding: 7px 10px; font-size: 13px; border-radius: 8px; }
-  #pageFooter { display: none; }
 
-  /* 뉴스 팝업: 전체 화면이 아니라 종목 리스트 상단에 붙어서 표시 */
-  .scroll-area { position: relative; }
-  .modal-overlay {
-    position: sticky;
-    inset: auto;
-    top: 0;
+  #tradeBar {
+    position: fixed;
     left: 0;
     right: 0;
-    z-index: 30;
-    background: linear-gradient(180deg, #10141c 78%, transparent);
-    padding: 4px 0 10px;
-    justify-content: center;
+    bottom: 0;
+    z-index: 45;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+    max-height: 45vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  }
+  .mini-label { font-size: 11px; margin-bottom: 4px; }
+  .mini-hint { display: none; }
+  .holding-chip { padding: 5px 9px; font-size: 12px; }
+  #tradeBar h3 { font-size: 14px; margin: 4px 0 2px; }
+  .trade-summary { margin-bottom: 4px; font-size: 12px; }
+  .trade-box .qty-row { margin-bottom: 6px; }
+  .error-msg { min-height: 0; margin-bottom: 4px; font-size: 12px; }
+  .trade-box .actions button { padding: 8px 12px; font-size: 14px; }
+
+  /* 뉴스 팝업: 오버레이/고정 없이 종목 리스트 맨 위에 평범하게 표시 */
+  .modal-overlay {
+    position: static;
+    background: none;
+    padding: 0 0 10px;
+    z-index: auto;
   }
   .modal-box {
     width: 100%;
     max-width: none;
-    padding: 14px 14px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    padding: 16px;
   }
-  .modal-box h3 { font-size: 15px; margin: 6px 0 4px; }
-  #modalMessage { font-size: 13px; line-height: 1.5; }
-  .modal-detail { padding: 8px 10px; font-size: 12px; margin: 8px 0; }
-  .modal-tag { font-size: 11px; padding: 3px 8px; }
-  #modalCloseBtn { font-size: 13px; padding: 9px 14px; }
 }
 
 /* ---- 데스크톱: 2단 레이아웃 (왼쪽 종목 리스트, 오른쪽 매매/보유종목) ---- */
