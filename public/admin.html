@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>교사 관리 화면 - 모의주식투자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/style.css" />
 <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -31,18 +34,18 @@
       <button class="btn-secondary" id="toggleTradingBtn">거래 시작/일시정지</button>
       <button class="btn-danger" id="endGameBtn">게임 종료 (최종 순위 확정)</button>
       <button class="btn-danger" id="resetBtn">전체 초기화 (새 수업 시작)</button>
-      <p style="color:#9aa4b8; font-size:13px; margin-top:10px">
-        게임 종료를 누르면 모든 학생의 거래가 잠기고 <a href="/results.html" target="_blank" style="color:#4f7cff">최종 순위 화면</a>으로 자동 이동합니다.
+      <p style="color:#8891B0; font-size:13px; margin-top:10px">
+        게임 종료를 누르면 모든 학생의 거래가 잠기고 <a href="/results.html" target="_blank" style="color:#4C6FFF">최종 순위 화면</a>으로 자동 이동합니다.
       </p>
     </div>
 
     <div class="panel">
       <h3>수업 타이머</h3>
-      <p style="color:#9aa4b8; font-size:13px; margin-top:0">
+      <p style="color:#8891B0; font-size:13px; margin-top:0">
         시간을 정해두면 학생 화면에 남은 시간이 표시되고, 시간이 다 되면 자동으로 거래가 잠기고 최종 순위 화면으로 이동합니다.
       </p>
       <div class="qty-row">
-        <label style="align-self:center; width:110px; color:#9aa4b8">수업 시간(분)</label>
+        <label style="align-self:center; width:110px; color:#8891B0">수업 시간(분)</label>
         <input type="number" id="roundMinutes" min="1" value="20" />
       </div>
       <button class="btn-primary" id="startRoundBtn" style="width:100%; margin-bottom:8px">타이머 시작 (거래 시작)</button>
@@ -53,11 +56,11 @@
     <div class="panel">
       <h3>속도 조절</h3>
       <div class="qty-row">
-        <label style="align-self:center; width:130px; color:#9aa4b8">가격 변동 주기(초)</label>
+        <label style="align-self:center; width:130px; color:#8891B0">가격 변동 주기(초)</label>
         <input type="number" id="tickInterval" min="2" value="6" />
       </div>
       <div class="qty-row">
-        <label style="align-self:center; width:130px; color:#9aa4b8">이벤트 주기(초)</label>
+        <label style="align-self:center; width:130px; color:#8891B0">이벤트 주기(초)</label>
         <input type="number" id="eventInterval" min="5" value="25" />
       </div>
       <button class="btn-primary" id="applySpeedBtn">적용</button>
@@ -65,7 +68,7 @@
 
     <div class="panel">
       <h3>수동 이벤트 발동</h3>
-      <select id="eventStock" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; background:#10141c; color:#f0f2f6; border:2px solid #2c3345;">
+      <select id="eventStock" style="width:100%; padding:10px; margin-bottom:10px; border-radius:12px; background:#FBFCFF; color:#2D3452; border:3px solid #E7ECFC; font-family:inherit;">
         <option value="">종목 무작위 선택</option>
       </select>
       <div style="display:flex; flex-wrap:wrap; gap:6px;">
@@ -83,7 +86,7 @@
     </div>
   </div>
 
-  <footer class="hint">이 화면은 교사만 접속하세요. 학생 화면은 <a href="/" style="color:#4f7cff">여기</a>, 전체 순위 화면은 <a href="/results.html" style="color:#4f7cff">여기</a>입니다.</footer>
+  <footer class="hint">이 화면은 교사만 접속하세요. 학생 화면은 <a href="/" style="color:#4C6FFF">여기</a>, 전체 순위 화면은 <a href="/results.html" style="color:#4C6FFF">여기</a>입니다.</footer>
 </div>
 
 <script src="/js/admin.js"></script>
