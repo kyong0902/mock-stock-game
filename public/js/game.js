@@ -134,27 +134,27 @@ function renderHeader() {
 }
 
 function renderHoldings() {
-  const tbody = document.querySelector('#holdingsTable tbody');
-  tbody.innerHTML = '';
-  if (!portfolio || portfolio.holdings.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#9aa4b8">보유 종목 없음</td></tr>';
+  const wrap = document.getElementById('holdingsChips');
+  wrap.innerHTML = '';
+  const holdings = portfolio ? portfolio.holdings.filter((h) => h.quantity > 0) : [];
+  if (holdings.length === 0) {
+    wrap.innerHTML = '<span class="holding-empty">보유 종목 없음</span>';
     return;
   }
-  portfolio.holdings.forEach((h) => {
-    const tr = document.createElement('tr');
+  holdings.forEach((h) => {
     const value = h.is_delisted ? 0 : h.quantity * h.price;
-    tr.innerHTML = `<td>${h.name}${h.is_delisted ? '<span class="badge-bankrupt">상폐</span>' : ''}</td><td>${h.quantity}</td><td>${fmtWon(value)}</td>`;
+    const chip = document.createElement('div');
+    chip.className = 'holding-chip' + (h.stock_id === selectedStockId ? ' selected' : '');
+    chip.innerHTML = `<span class="chip-name">${h.name}${h.is_delisted ? '<span class="badge-bankrupt">상폐</span>' : ''}</span> · ${h.quantity}주 · <span class="chip-value">${fmtWon(value)}</span>`;
     if (!h.is_delisted) {
-      tr.classList.add('clickable');
-      if (h.stock_id === selectedStockId) tr.classList.add('row-selected');
-      tr.addEventListener('click', () => {
+      chip.addEventListener('click', () => {
         selectedStockId = h.stock_id;
         renderStockList();
         renderTradeBox();
         renderHoldings();
       });
     }
-    tbody.appendChild(tr);
+    wrap.appendChild(chip);
   });
 }
 

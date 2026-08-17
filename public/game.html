@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>모의주식투자 - 거래</title>
 <link rel="stylesheet" href="/css/style.css" />
 <script src="/socket.io/socket.io.js"></script>
@@ -28,13 +28,8 @@
   </div>
 </div>
 
-<div class="main-layout">
-  <div>
-    <div class="sector-tabs" id="sectorTabs"></div>
-    <div class="stock-list" id="stockList"></div>
-  </div>
-
-  <div>
+<div class="page-shell">
+  <div class="fixed-controls">
     <div class="panel trade-box" id="tradeBar">
       <h3 id="selectedStockName">종목을 선택하세요</h3>
       <div class="trade-summary" id="selectedStockInfo"></div>
@@ -49,23 +44,26 @@
       </div>
     </div>
 
-    <div class="panel">
-      <h3>내 보유 종목</h3>
-      <p style="color:#9aa4b8; font-size:12px; margin-top:-8px">종목을 탭하면 위에서 바로 매수/매도할 수 있어요</p>
-      <table class="holdings-table" id="holdingsTable">
-        <thead><tr><th>종목</th><th>수량</th><th>평가액</th></tr></thead>
-        <tbody></tbody>
-      </table>
+    <div class="panel holdings-panel">
+      <h3>내 보유 종목 <span style="font-weight:400; font-size:12px; color:#9aa4b8">(탭하면 바로 매매)</span></h3>
+      <div class="holdings-chips" id="holdingsChips">
+        <span class="holding-empty">보유 종목 없음</span>
+      </div>
     </div>
+  </div>
+
+  <div class="scroll-area" id="scrollArea">
+    <div class="sector-tabs" id="sectorTabs"></div>
+    <div class="stock-list" id="stockList"></div>
 
     <div class="panel">
       <h3>실시간 순위</h3>
       <ul class="leaderboard-list" id="leaderboardList"></ul>
     </div>
+
+    <footer class="hint" id="pageFooter">모의 투자입니다. 실제 돈이나 실제 기업과 무관합니다.</footer>
   </div>
 </div>
-
-<footer class="hint" id="pageFooter">모의 투자입니다. 실제 돈이나 실제 기업과 무관합니다.</footer>
 
 <script src="/js/game.js"></script>
 </body>
