@@ -255,9 +255,9 @@ function scheduleTick() {
   }, Math.max(2, state.tick_interval_sec) * 1000);
 }
 
-// 게임(서버)이 시작된 뒤 처음 90초 동안은 뉴스 이벤트가 뜨지 않고,
-// 그 이후부터 event_interval_sec 주기로 자동 발생함 (전체 초기화 시 다시 90초 대기)
-const FIRST_EVENT_DELAY_SEC = 90;
+// 게임(서버)이 시작된 뒤 처음 60초 동안은 뉴스 이벤트가 뜨지 않고,
+// 그 이후부터 event_interval_sec 주기로 자동 발생함 (전체 초기화 시 다시 60초 대기)
+const FIRST_EVENT_DELAY_SEC = 60;
 let gameStartedAt = Date.now();
 
 function scheduleEvent() {
